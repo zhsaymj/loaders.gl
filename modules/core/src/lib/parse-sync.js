@@ -36,7 +36,11 @@ export function parseSync(data, loaders, options, context) {
 
   context = getLoaderContext({url, parseSync, loaders}, options);
 
-  return parseWithLoaderSync(loader, data, options, context);
+  const result = parseWithLoaderSync(loader, data, options, context);
+  if (loader.postProcessOnMainThread) {
+    return loader.postProcessOnMainThread(result, options, context);
+  }
+  return result;
 }
 
 // TODO - should accept loader.parseSync/parse and generate 1 chunk asyncIterator

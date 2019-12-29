@@ -43,7 +43,14 @@ export async function parse(data, loaders, options, context) {
   // Get a context (if already present, will be unchanged)
   context = getLoaderContext({url: autoUrl, parse, loaders: candidateLoaders}, options, context);
 
-  return await parseWithLoader(loader, data, options, context);
+  const result = await parseWithLoader(loader, data, options, context);
+
+  // Any final post-worker processing that must be done on main thread
+  if (loader.postProcessOnMainThread) {
+    return loader.postProcessOnMainThread(result, options, context);
+  }
+
+  return result;
 }
 
 // TODO: support progress and abort
@@ -61,6 +68,7 @@ async function parseWithLoader(loader, data, options, context) {
 
   // If we have a workerUrl and the loader can parse the given options efficiently in a worker
   if (canParseWithWorker(loader, data, options, context)) {
+    // console.warn('parsing with worker');
     return await parseWithWorker(loader, data, options, context);
   }
 

@@ -32,7 +32,8 @@ export default async function parseImage(arrayBuffer, options, context) {
   let image;
   switch (loadType) {
     case 'imagebitmap':
-      return await parseToImageBitmap(arrayBuffer, options);
+      image = await parseToImageBitmap(arrayBuffer, options);
+      break;
     case 'image':
       image = await parseToImage(arrayBuffer, options);
       break;
@@ -46,7 +47,12 @@ export default async function parseImage(arrayBuffer, options, context) {
 
   // Browser: if options.image.type === 'data', we can now extract data from the loaded image
   if (imageType === 'data') {
-    image = getImageData(image, false);
+    const data = getImageData(image);
+    // imageBitmap has a close method to dispose of graphical resources, test if available
+    if (image.close) {
+      image.close();
+    }
+    return data;
   }
 
   return image;
@@ -62,7 +68,9 @@ function getLoadableImageType(type) {
       return getDefaultImageType();
     default:
       // Throw an error if not supported
-      isImageTypeSupported(type);
+      if (!isImageTypeSupported(type)) {
+        throw new Error(`@loaders.gl/images: image type ${type} not supported in this environment`);
+      }
       return type;
   }
 }
