@@ -133,7 +133,17 @@ The schema will be inferred from the record batches.
 
 Create a new `Table` from a collection of `Columns` or `Vectors`, with an optional list of names or `Fields`.
 
-TBD
+TBA
+
+### assign(table: Table): Table
+
+Notes Assigning new columns to Tables can be complicated in Arrow as tables can have a different batch structure and this needs to be aligned for assignment to work. It's a lot to deal with outside the library, the `table.assign()` method handle all this for you.
+
+You don't have to do anything special -- the source and target tables can have different internal chunked/not chunked layouts, and can even be different lengths (the function append a new `RecordBatch` with empty null bitmaps to extend the length of shorter columns).
+
+Check out this observable notebook for an example: https://observablehq.com/d/de44f072e320e3f7
+
+The one caveat is it's difficult to go from chunked -> not chunked (without round-tripping through the Builders). It'd be nice if there was a "combine chunks" routine that could provide a more optimized typed-array implementation that merged contiguous chunks with copies (though merging bitmaps is a headache).
 
 ### clone(chunks?:)
 
