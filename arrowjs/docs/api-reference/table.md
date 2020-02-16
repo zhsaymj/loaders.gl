@@ -137,13 +137,21 @@ TBA
 
 ### assign(table: Table): Table
 
-Notes Assigning new columns to Tables can be complicated in Arrow as tables can have a different batch structure and this needs to be aligned for assignment to work. It's a lot to deal with outside the library, the `table.assign()` method handle all this for you.
+Returns a new table with the columns of the `table` parameter added to the the columns of the `Table` instance being assigned to. If any columns have the same name in both tables, the column from the `table` paramter will replace the columns from the original table.
 
-You don't have to do anything special -- the source and target tables can have different internal chunked/not chunked layouts, and can even be different lengths (the function append a new `RecordBatch` with empty null bitmaps to extend the length of shorter columns).
 
-Check out this observable notebook for an example: https://observablehq.com/d/de44f072e320e3f7
+Notes: 
+- As usual, the original tables are not modified. 
+- `Table.assign()` is a zero-copy operation only if both tables have the same batch structure and length.
 
-The one caveat is it's difficult to go from chunked -> not chunked (without round-tripping through the Builders). It'd be nice if there was a "combine chunks" routine that could provide a more optimized typed-array implementation that merged contiguous chunks with copies (though merging bitmaps is a headache).
+Remarks:
+
+- For fields (columns) that have the same names in both tables, the corresponding columns will be replaced (i.e. the columns in the original table will be replaced with the columns with the same name in the new table.)
+- The order of columns will be the order of the columns in the original table, any columns with new names will be added at the end of the new table's `schema.fields`.
+- Assigning new columns to Tables can be complicated in Arrow as tables can have a different batch structure and this needs to be aligned for assignment to work. The `table.assign()` method handle all this.
+- The source and target tables can have different internal chunked/not chunked layouts, and can even be different lengths (the function append a new `RecordBatch` with empty null bitmaps to extend the length of shorter columns).
+- The major caveat is it's difficult to go from chunked -> not chunked (without round-tripping through the Builders). There is not yet a "combine chunks" routine that could provide a more optimized typed-array implementation that merged contiguous chunks with copies (especially as merging bitmaps is complex).
+- An example can be found in this [observable notebook](https://observablehq.com/d/de44f072e320e3f7).
 
 ### clone(chunks?:)
 
@@ -171,7 +179,6 @@ Returns a `Uint8Array` that contains an encoding of all the data in the table.
 
 Note: Passing the returned data back into `Table.from()` creates a "deep clone" of the table.
 
-
 ### count(): number
 
 TBD - Returns the number of elements.
@@ -183,3 +190,7 @@ Returns a new Table with the specified subset of columns, in the specified order
 ### countBy(name : Col | String) : Table
 
 Returns a new Table that contains two columns (`values` and `counts`).
+
+## Source
+
+- [table.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/table.ts)

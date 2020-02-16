@@ -204,4 +204,6 @@ Returns a single contiguous typed array containing data in all the chunks (effec
 Notes:
 * Calling this function creates a new typed array unless there is only one chunk.
 
+## Source
 
+- [chunked.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/vector/chunked.ts)

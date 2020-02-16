@@ -28,9 +28,10 @@ TBD - List of fields
 
 Creates a new schema instance.
 
-
 ### select(columnNames) : Schema
 
 Returns a new `Schema` with the Fields indicated by the column names.
 
+## Source
 
+- [schema.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/schema.ts)

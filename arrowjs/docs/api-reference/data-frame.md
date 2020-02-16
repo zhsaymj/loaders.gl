@@ -19,3 +19,6 @@ Performantly iterates over all non-filtered rows in the data frame.
 
 ### countBy(name: Col | String) : CountByResult
 
+## Source
+
+- [dataframe.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/compute/dataframe.ts)

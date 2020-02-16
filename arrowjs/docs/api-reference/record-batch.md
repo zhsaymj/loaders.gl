@@ -75,3 +75,7 @@ Concatenates a number of `Vector` instances.
 ### select(...columnNames: K[]) : RecordBatch
 
 Return a new `RecordBatch` with a subset of columns.
+
+## Source
+
+- [recordbatch.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/recordbatch.ts)

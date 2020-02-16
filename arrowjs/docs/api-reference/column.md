@@ -57,3 +57,7 @@ Returns a new `Column` instance with the same properties.
 ### getChildAt(index : Number) : Vector
 
 Returns the `Vector` that contains the element with 
+
+## Source
+
+- [column.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/column.ts)

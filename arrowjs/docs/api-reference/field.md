@@ -39,3 +39,8 @@ Creates an instance of `Field` with parameters initialized as follows:
 * `name` - Name of the column
 * `nullable`=`false` - Whether a null-array is maintained.
 * `metadata`=`null` - Map of metadata
+
+
+## Source
+
+- [schema.ts](https://github.com/apache/arrow/blob/maint-0.15.x/js/src/schema.ts)
