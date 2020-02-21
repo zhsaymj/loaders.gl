@@ -2,7 +2,8 @@ import {toRadians} from 'math.gl';
 import {getDistanceScales} from 'viewport-mercator-project';
 const WGS84_RADIUS_X = 6378137.0;
 // use this to bias the lod switching  (1+ results in increasing the LOD quality)
-const qualityFactor = 1;
+const qualityFactor = 1.0;
+
 /* eslint-disable max-statements */
 export function lodJudge(tile, frameState) {
   const viewport = frameState.viewport;
@@ -105,20 +106,16 @@ export function getScreenSize(tile, frameState) {
   // console.log(d, tile._distanceToCamera);
   return screenSizeFactor;
 }
-
+//frameState.viewProjectionMatrix[
 function calculateScreenSizeFactor(tile, frameState) {
   const tanOfHalfVFAngle = Math.tan(
     Math.atan(
       Math.sqrt(
-        1.0 / (frameState.viewProjectionMatrix[0] * frameState.viewProjectionMatrix[0]) +
-          1.0 / (frameState.viewProjectionMatrix[5] * frameState.viewProjectionMatrix[5])
+        1.0 / (frameState.viewport.pixelProjectionMatrix[0] * frameState.viewport.pixelProjectionMatrix[0]) +
+          1.0 / (frameState.viewport.pixelProjectionMatrix[5] * frameState.viewport.pixelProjectionMatrix[5])
       )
     )
   );
-
-  const screenCircleFactor =
-    Math.sqrt(frameState.height * frameState.height + frameState.width * frameState.width) /
-    tanOfHalfVFAngle;
-
-  return screenCircleFactor;
+  const screenCircleFactor = Math.sqrt(frameState.height * frameState.height + frameState.width * frameState.width) / tanOfHalfVFAngle;
+  return screenCircleFactor * Math.PI/2;  //emperically derived bias factor:
 }

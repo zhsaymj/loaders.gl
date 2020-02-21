@@ -17,14 +17,18 @@ const TEST_DATA_URL =
   'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0';
 //philadelphia_Bldgs_text
 //Textured&Untextured
-//'https://urldefense.proofpoint.com/v2/url?u=https-3A__tiles.arcgis.com_tiles_z2tnIkrLQ2BRzr6P_arcgis_rest_services_philadelphia-5FBldgs-5Ftext-5Funtex_SceneServer_layers_0&d=DwIGAg&c=r2dcLCtU9q6n0vrtnDw9vg&r=uUft2jfAcssCZvs7TNFSSg&m=_cRfm773wKwaQfY-gwJnmnFhdfAc2w6eiJ0365x2msY&s=JSwo9eTTG3Pxwevj25groHWmKSPS5IJAB6lzSIoo_ns&e= ';
+//const TEST_DATA_URL =
+//'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/philadelphia_Bldgs_text_untex/SceneServer/layers/0';
 // Texturedonly
 //New_York_Buildings
 // const TEST_DATA_URL =
-// 'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/New_York_Buildings/SceneServer/layers/0';
+// 'Ra
 
 // const TEST_DATA_URL =
 //   'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/philadelphia_Bldgs_text_tex_untex_sub/SceneServer/layers/0';
+//Frankfurt2017_v17
+//const TEST_DATA_URL =
+  //'https://tiles.arcgis.com/tiles/u0sSNqDXr7puKJrF/arcgis/rest/services/Frankfurt2017_v17/SceneServer/layers/0';
 
 // Set your mapbox token here
 const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
@@ -32,7 +36,6 @@ const MAPBOX_TOKEN = process.env.MapboxAccessToken; // eslint-disable-line
 const TRANSITION_DURAITON = 4000;
 
 //SF
-
 const INITIAL_VIEW_STATE = {
   longitude: -122.43751306035713,
   latitude: 37.78249440803938,
@@ -45,6 +48,7 @@ const INITIAL_VIEW_STATE = {
   maxZoom: 30,
   zoom: 14.5
 };
+
 /* */
 //NY
 /*
@@ -63,8 +67,7 @@ const INITIAL_VIEW_STATE = {
 */
 
 //philadelphia_Bldgs_text
-/*
-const INITIAL_VIEW_STATE = {
+/*const INITIAL_VIEW_STATE = {
   longitude: -75.16725679895995,
   latitude: 39.95667467886362,
   height: 600,
@@ -75,7 +78,22 @@ const INITIAL_VIEW_STATE = {
   minZoom: 2,
   maxZoom: 30,
   zoom: 14.5
-};
+};*/
+
+ //Frankfurt2017_v17
+ /*
+ const INITIAL_VIEW_STATE = {
+   longitude: 8.6769633431050064,
+   latitude: 50.109443863804177,
+   height: 600,
+   width: 800,
+   pitch: 45,
+   maxPitch: 60,
+   bearing: 0,
+   minZoom: 2,
+   maxZoom: 30,
+   zoom: 14.5
+ };
  */
 
 export default class App extends PureComponent {
