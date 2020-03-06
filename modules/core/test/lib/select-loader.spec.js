@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import test from 'tape-promise/tape';
-import {fetchFile, _selectLoader as selectLoader} from '@loaders.gl/core';
+import {fetchFile, selectLoader} from '@loaders.gl/core';
 import {ImageLoader} from '@loaders.gl/images';
 import {DracoLoader} from '@loaders.gl/draco';
 import {LASLoader} from '@loaders.gl/las';

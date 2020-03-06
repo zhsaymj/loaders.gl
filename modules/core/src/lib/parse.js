@@ -19,6 +19,8 @@ export async function parse(data, loaders, options, context) {
   // DEPRECATED - backwards compatibility, last param can be URL...
   let url = '';
   if (typeof context === 'string') {
+    // eslint-disable-next-line
+    console.warn('loaders.gl / parse: url param is deprecated');
     url = context;
     context = null;
   }

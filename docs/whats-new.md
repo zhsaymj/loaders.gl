@@ -66,7 +66,8 @@ The new loaders empowers rendering frameworks to visualize various geospatial da
 
 **@loaders.gl/core**
 
-- The `load` and `parse` functions can now read data directly from `Stream` objects both in node and browser.
+- The `load` and `parse` functions can now read data from `Stream` objects in both node and browser.
+- The `loadInBatches` and `parseInBatches` functions can now read data from `File` and `Blob` objects (browser only). See documentation of `parseInBatches` regarding limitations.
 
 **@loaders.gl/arrow**
 

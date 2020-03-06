@@ -1,6 +1,6 @@
-import {getRegisteredLoaders} from './register-loaders';
+import {isResponse} from '../javascript-utils/is-type';
 import {normalizeLoader} from './loader-utils/normalize-loader';
-import {isFetchResponse} from '../javascript-utils/is-type';
+import {getRegisteredLoaders} from './register-loaders';
 
 const EXT_PATTERN = /\.([^.]+)$/;
 const DATA_URL_PATTERN = /^data:(.*?)(;|,)/;
@@ -14,42 +14,59 @@ const DATA_URL_PATTERN = /^data:(.*?)(;|,)/;
 // TODO - Allow apps to pass context to disambiguate between multiple matches (e.g. multiple .json formats)?
 
 // eslint-disable-next-line complexity
-export function selectLoader(loaders, url = '', data = null, {nothrow = false} = {}) {
-  url = url || '';
-
+export function selectLoader(data, loaders = [], options = {}, info = {}) {
   // if only a single loader was provided (not as array), force its use
   // TODO - Should this behaviour be kept and documented?
   if (loaders && !Array.isArray(loaders)) {
-    const loader = loaders;
-    normalizeLoader(loader);
-    return loader;
+    return normalizeLoader(loaders);
   }
 
-  // If no loaders provided, get the registered loaders
-  loaders = [...(loaders || []), ...getRegisteredLoaders()];
+  const {url, contentType} = getUrlAndContentType(data, info);
+
+  // Add registered loaders
+  loaders = [...loaders, ...getRegisteredLoaders()];
   normalizeLoaders(loaders);
 
-  url = url.replace(/\?.*/, '');
   let loader = findLoaderByUrl(loaders, url);
-  loader = loader || findLoaderByContentType(loaders, data);
+  loader = loader || findLoaderByContentType(loaders, contentType);
   loader = loader || findLoaderByExamingInitialData(loaders, data);
 
   // no loader available
-  if (!loader) {
-    if (nothrow) {
-      return null;
-    }
-    let message = 'No valid loader found';
-    if (data) {
-      message += ` for data starting with "${getFirstCharacters(data)}"`;
-    }
-    if (url) {
-      message += ` for ${url}`;
-    }
-    throw new Error(message);
+  if (!loader && !options.nothrow) {
+    throw new Error(getNoValidLoaderMessage(data, url, contentType));
   }
 
   return loader;
+}
+
+function getUrlAndContentType(data, info) {
+  let {url, contentType} = info;
+  if (isResponse(data)) {
+    url = url || data.url;
+    contentType = contentType || data.headers.get('Content-Type');
+  }
+  // Check for data url
+  if (url) {
+    const match = url.match(DATA_URL_PATTERN);
+    const mimeType = match && match[1];
+    contentType = mimeType;
+  }
+
+  // TODO - what does this do?
+  url = url.replace(/\?.*/, '');
+
+  return {url, contentType};
+}
+
+function getNoValidLoaderMessage(data, url, contentType) {
+  let message = 'No valid loader found';
+  if (data) {
+    message += ` data: "${getFirstCharacters(data)}"`;
+  }
+  if (url) {
+    message += ` for ${url}`;
+  }
+  return message;
 }
 
 function normalizeLoaders(loaders) {
@@ -61,25 +78,10 @@ function normalizeLoaders(loaders) {
 // TODO - Would be nice to support http://example.com/file.glb?parameter=1
 // E.g: x = new URL('http://example.com/file.glb?load=1'; x.pathname
 function findLoaderByUrl(loaders, url) {
-  // Check for data url
-  let match = url.match(DATA_URL_PATTERN);
-  const mimeType = match && match[1];
-  if (mimeType) {
-    return findLoaderByMimeType(loaders, mimeType);
-  }
   // Get extension
-  match = url.match(EXT_PATTERN);
+  const match = url.match(EXT_PATTERN);
   const extension = match && match[1];
   return extension && findLoaderByExtension(loaders, extension);
-}
-
-function findLoaderByMimeType(loaders, mimeType) {
-  for (const loader of loaders) {
-    if (loader.mimeTypes && loader.mimeTypes.includes(mimeType)) {
-      return loader;
-    }
-  }
-  return null;
 }
 
 function findLoaderByExtension(loaders, extension) {
@@ -95,14 +97,13 @@ function findLoaderByExtension(loaders, extension) {
   return null;
 }
 
-// data should be a Response object
-function findLoaderByContentType(loaders, data) {
-  if (!data || !isFetchResponse(data) || !data.headers) {
-    return null;
+function findLoaderByContentType(loaders, mimeType) {
+  for (const loader of loaders) {
+    if (loader.mimeTypes && loader.mimeTypes.includes(mimeType)) {
+      return loader;
+    }
   }
-
-  const contentType = data.headers.get('content-type');
-  return findLoaderByMimeType(loaders, contentType);
+  return null;
 }
 
 function findLoaderByExamingInitialData(loaders, data) {

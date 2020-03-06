@@ -1,8 +1,7 @@
-/* global fetch */
+/* global fetch, Response */
 import {resolvePath} from '@loaders.gl/loader-utils';
 import {isFileReadable} from '../../javascript-utils/is-type';
-import fetchFileReadable from './fetch-file.browser';
-import {getErrorMessageFromResponse} from './fetch-error-message';
+import {getErrorMessageFromResponse} from './response-utils';
 
 // As fetch but respects pathPrefix and file aliases
 // Reads file data from:
@@ -11,8 +10,17 @@ import {getErrorMessageFromResponse} from './fetch-error-message';
 // * File/Blob objects
 export async function fetchFile(url, options = {}) {
   if (isFileReadable(url)) {
-    return fetchFileReadable(url, options);
+    const fileOrBlob = url;
+    return new Response(fileOrBlob, {
+      // Make sure we have headers so that we can particpate in
+      // loader auto-selection and progress tracking!
+      headers: {
+        'Content-Length': fileOrBlob.size,
+        'Content-Type': fileOrBlob.type
+      }
+    });
   }
+
   url = resolvePath(url);
   // TODO - SUPPORT reading from `File` objects
   const response = await fetch(url, options);

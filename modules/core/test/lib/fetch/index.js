@@ -1,3 +1,5 @@
-import './fetch-error-message.spec';
+import './response-utils.spec';
+import './fetch-resource.spec';
+
+// Deprecated
 import './fetch-file.spec';
-import './fetch-file.browser.spec';

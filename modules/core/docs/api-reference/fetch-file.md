@@ -1,5 +1,7 @@
 # fetchFile
 
+> `fetchFile` is deprecated. Use `fetchResource` instead.
+
 The `fetchFile` function is a wrapper around `fetch` which provides support for path prefixes and some additional loading capabilities.
 
 ## Usage

@@ -14,12 +14,14 @@ export async function load(url, loaders, options) {
   }
 
   // at this point, `url` could be already loaded binary data
-  let data = url;
+  let data;
 
   // url is a string, fetch the url
   if (typeof url === 'string') {
+    // && url.slice(0, 10).includes(':')) look for schema...
     data = await fetchFile(url, options);
   } else {
+    data = url;
     url = null;
   }
 
