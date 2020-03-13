@@ -8,7 +8,7 @@ The 3D Tiles category defines a generalized representation of hierarchical geosp
 
 | Loader                                                            | Notes |
 | ----------------------------------------------------------------- | ----- |
-| [`Tiles3DLoader`](modules/gltf/docs/api-reference/gltf-loader)    |       |
+| [`Tiles3DLoader`](modules/gltf/docs/api-reference/tiles-3d-loader)    |       |
 | [`I3SLoader`](modules/i3s/docs/api-reference/i3s-loader)          |       |
 | [`PotreeLoader`](modules/potree/docs/api-reference/potree-loader) |       |
 
