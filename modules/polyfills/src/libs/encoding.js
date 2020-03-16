@@ -3080,4 +3080,4 @@ decoders['x-user-defined'] = function(options) {
 // FORK
 // if (!global['TextEncoder']) global['TextEncoder'] = TextEncoder;
 // if (!global['TextDecoder']) global['TextDecoder'] = TextDecoder;
-export {TextEncoder, TextDecoder};
+module.exports = {TextEncoder, TextDecoder};
