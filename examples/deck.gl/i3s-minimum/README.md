@@ -1,4 +1,4 @@
-This is a standalone web app using `@loaders.gl/i3s-tiles`.
+This is a example with minimum code to load an I3S scene layer.
 
 ### Usage
 
