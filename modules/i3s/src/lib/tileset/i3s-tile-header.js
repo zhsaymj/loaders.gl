@@ -13,6 +13,7 @@ import {parseI3SNodeGeometry} from '../parsers/parse-i3s-node-geometry';
 const scratchCenter = new Vector3();
 const scratchToTileCenter = new Vector3();
 const scratchPlane = new Plane();
+const useFeatureDataLessTraversal = true;
 
 function updatePriority(tile) {
   // Check if any reason to abort
@@ -216,6 +217,7 @@ export default class I3STileHeader {
     return getScreenSize(this, frameState);
   }
 
+
   // Requests the tile's content.
   // The request may not be made if the Request Scheduler can't prioritize it.
   // eslint-disable-next-line max-statements
@@ -281,24 +283,29 @@ export default class I3STileHeader {
   }
 
   async _loadData() {
-    if (!(this._content && this._content.featureData)) {
-      this._content = this._content || {};
-      this._content.featureData = {};
+    if (!(this._content && (this._content.featureData || useFeatureDataLessTraversal))) {
+        this._content = this._content || {};
+        this._content.featureData = {};
 
-      const featureData = await this._loadFeatureData();
-      const geometryBuffer = await this._loadGeometryBuffer();
+        const geometryBuffer = await this._loadGeometryBuffer();
 
-      this._content.featureData = featureData;
+        if (!useFeatureDataLessTraversal) {
+          const featureData = await this._loadFeatureData();
+          this._content.featureData = featureData;
+        }
+        else {
 
-      if (this._header.textureData) {
-        this._content.texture = `${this._basePath}/nodes/${this.id}/${
-          this._header.textureData[0].href
-        }`;
+        }
+
+        if (this._header.textureData) {
+          this._content.texture = `${this._basePath}/nodes/${this.id}/${
+            this._header.textureData[0].href
+            }`;
+        }
+
+        parseI3SNodeGeometry(geometryBuffer, this);
+        this.tileset._debug[this.id].load++;
       }
-
-      parseI3SNodeGeometry(geometryBuffer, this);
-      this.tileset._debug[this.id].load++;
-    }
   }
 
   // Unloads the tile's content.

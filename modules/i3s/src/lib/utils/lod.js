@@ -2,7 +2,7 @@ import {toRadians} from 'math.gl';
 import {getDistanceScales} from 'viewport-mercator-project';
 const WGS84_RADIUS_X = 6378137.0;
 // use this to bias the lod switching  (1+ results in increasing the LOD quality)
-const qualityFactor = 1.0;
+const qualityFactor = 2;
 
 /* eslint-disable max-statements */
 export function lodJudge(tile, frameState) {

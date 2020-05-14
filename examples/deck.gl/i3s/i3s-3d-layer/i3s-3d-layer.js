@@ -48,7 +48,10 @@ export default class Tile3DLayer extends CompositeLayer {
   async _loadTileset(tilesetUrl, fetchOptions) {
     const response = await fetch(tilesetUrl, fetchOptions);
     const tilesetJson = await response.json();
+    tilesetUrl = tilesetUrl.replace(/\?f=pjson/gi,"");
     const rootNodeUrl = getRootNodeUrl(tilesetUrl);
+
+
     tilesetJson.root = await fetch(rootNodeUrl, fetchOptions).then(resp => resp.json());
     tilesetJson.refine = 'REPLACE';
 
