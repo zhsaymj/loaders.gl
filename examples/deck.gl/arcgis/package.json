@@ -6,11 +6,9 @@
     "build": "webpack -p"
   },
   "dependencies": {
-    "deck.gl": "^8.1.1",
-    "@deck.gl/arcgis": "^8.1.1",
-    "@deck.gl/geo-layers": "^8.1.1",
-    "@deck.gl/layers": "^8.1.1",
-    "@deck.gl/mesh-layers": "^8.1.1",
+    "deck.gl": "^8.1.6",
+    "@deck.gl/arcgis": "^8.1.6",
+    "@luma.gl/constants": "^8.1.2",
     "@loaders.gl/i3s": "^2.1.2"
   },
   "devDependencies": {

@@ -1,8 +1,9 @@
 /* global setInterval */
 
-import { loadArcGISModules } from "@deck.gl/arcgis";
-import { Tile3DLayer } from "@deck.gl/geo-layers";
-import { I3SLoader } from "@loaders.gl/i3s";
+import { loadArcGISModules } from '@deck.gl/arcgis';
+import { Tile3DLayer } from '@deck.gl/geo-layers';
+import { I3SLoader } from '@loaders.gl/i3s';
+import GL from '@luma.gl/constants';
 
 function flipY(texCoords) {
   for (let i = 0; i < texCoords.length; i += 2) {
@@ -13,15 +14,11 @@ function flipY(texCoords) {
 function renderLayers(sceneView) {
   return [
     new Tile3DLayer({
-      id: "tile-3d-layer",
+      id: 'tile-3d-layer',
       // Tileset entry point: Indexed 3D layer file url
       data:
-        "https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0",
+        'https://tiles.arcgis.com/tiles/z2tnIkrLQ2BRzr6P/arcgis/rest/services/SanFrancisco_Bldgs/SceneServer/layers/0',
       loader: I3SLoader,
-      parameters: {
-        depthTest: false,
-        depthMask: false,
-      },
       onTilesetLoad: tileset => {
         const { cartographicCenter } = tileset;
         const [longitude, latitude] = cartographicCenter;
@@ -38,17 +35,17 @@ function renderLayers(sceneView) {
 }
 
 loadArcGISModules([
-  "esri/Map",
-  "esri/views/SceneView",
-  "esri/views/3d/externalRenderers"
+  'esri/Map',
+  'esri/views/SceneView',
+  'esri/views/3d/externalRenderers'
 ]).then(({ DeckRenderer, modules }) => {
   const [ArcGISMap, SceneView, externalRenderers] = modules;
-
+  let initialized = false;
   const sceneView = new SceneView({
-    container: "sceneViewDiv",
-    qualityProfile: "high",
+    container: 'sceneViewDiv',
+    qualityProfile: 'high',
     map: new ArcGISMap({
-      basemap: "dark-gray-vector"
+      basemap: 'dark-gray-vector'
     }),
     environment: {
       atmosphereEnabled: false
@@ -58,13 +55,39 @@ loadArcGISModules([
       heading: 180,
       tilt: 45
     },
-    viewingMode: "local"
+    viewingMode: 'local'
   });
 
   const renderer = new DeckRenderer(sceneView, {});
   externalRenderers.add(sceneView, renderer);
 
   setInterval(() => {
+    const gl = renderer.model && renderer.model.gl;
+    if (!initialized && gl) {
+      gl.enable(gl.CULL_FACE);
+      gl.cullFace(gl.BACK);
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthMask(true);
+    }
+    if (gl) {
+      if (
+        gl.getParameter(gl.CULL_FACE_MODE) === GL.BACK &&
+        gl.getParameter(gl.DEPTH_TEST) &&
+        gl.getParameter(gl.DEPTH_WRITEMASK)
+      ) {
+        initialized = true;
+      } else {
+        initialized = false;
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.enable(gl.DEPTH_TEST);
+        gl.depthMask(true);
+        console.log(
+          ' cull ', gl.getParameter(gl.CULL_FACE_MODE) === GL.BACK,
+          ' depth ', gl.getParameter(gl.DEPTH_TEST), gl.getParameter(gl.DEPTH_WRITEMASK),
+        )
+      }
+    }
     renderer.deck.layers = renderLayers(sceneView);
   }, 50);
 });
