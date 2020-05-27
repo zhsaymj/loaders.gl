@@ -12,13 +12,11 @@ export function setGlobalOptions(options) {
 }
 
 // Merges options with global opts and loader defaults, also injects baseUri
-export function mergeOptions(loader, options, url) {
+export function mergeOptions(loader, options) {
   const loaderDefaultOptions =
     loader && (loader.DEFAULT_LOADER_OPTIONS || loader.defaultOptions || loader.options || {});
 
   const mergedOptions = {...loaderDefaultOptions};
-
-  addUrlOptions(mergedOptions, url);
 
   // LOGGING: options.log can be set to `null` to defeat logging
   if (mergedOptions.log === null) {
@@ -48,16 +46,5 @@ function mergeNestedFields(mergedOptions, options) {
       }
     }
     // else: No need to merge nested opts, and the initial merge already copied over the nested options
-  }
-}
-
-// Harvest information from the url
-// TODO - baseUri should be a directory, i.e. remove file component from baseUri
-// TODO - extract extension?
-// TODO - extract query parameters?
-// TODO - should these be injected on context instead of options?
-function addUrlOptions(options, url) {
-  if (url && !('baseUri' in options)) {
-    options.baseUri = url;
   }
 }

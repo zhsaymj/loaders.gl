@@ -1,3 +1,4 @@
+import {assert} from '@loaders.gl/loader-utils';
 import {isLoaderObject} from './loader-utils/normalize-loader';
 import {mergeOptions} from './loader-utils/merge-options';
 import {getAsyncIteratorFromData} from './loader-utils/get-data';
@@ -5,23 +6,24 @@ import {getLoaderContext} from './loader-utils/get-loader-context';
 import {selectLoader} from './select-loader';
 import {textDecoderAsyncIterator} from '../iterator-utils/async-iteration';
 
-export async function parseInBatches(data, loaders, options, url) {
+export async function parseInBatches(data, loaders, options, context) {
+  assert(typeof context !== 'string');
   // Signature: parseInBatches(data, options, url)
   // Uses registered loaders
   if (!Array.isArray(loaders) && !isLoaderObject(loaders)) {
-    url = options;
+    context = null;
     options = loaders;
     loaders = null;
   }
 
   // Chooses a loader and normalizes it
   // TODO - only uses URL, need a selectLoader variant that peeks at first stream chunk...
-  const loader = selectLoader(loaders, url, null);
+  const loader = selectLoader(data, loaders, options, context);
 
   // Normalize options
-  options = mergeOptions(loader, options, url);
+  options = mergeOptions(loader, options);
 
-  const context = getLoaderContext({url, loaders}, options);
+  context = getLoaderContext({loaders}, options, context);
 
   return await parseWithLoaderInBatches(loader, data, options, context);
 }

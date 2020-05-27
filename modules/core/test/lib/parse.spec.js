@@ -19,6 +19,7 @@ test('parse#Blob (text)', async t => {
     return;
   }
 
+  debugger;
   const TEXT_DATA = JSON.stringify(JSON_DATA);
   const blob = new Blob([TEXT_DATA]);
 

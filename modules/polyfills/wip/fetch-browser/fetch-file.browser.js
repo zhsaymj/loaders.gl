@@ -1,4 +1,4 @@
-/* global FileReader, Headers */
+/* global FileReader, Headers, ReadableStream */
 import {assert} from '@loaders.gl/loader-utils';
 
 // File reader fetch "polyfill" for the browser
@@ -50,9 +50,26 @@ class FileReadableResponse {
   // Can this be portable?
   // eslint-disable-next-line
   // https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#Creating_your_own_custom_readable_stream
-  // get body() {
-  //   assert(false);
-  // }
+  get body() {
+    let reader;
+    let promise;
+
+    return new ReadableStream({
+      async start(controller) {
+        ({reader, promise} = this._getFileReader());
+        reader.readAsArrayBuffer(this._fileOrBlob);
+      },
+      pull(controller) {
+        controller.close();
+        return promise;
+      },
+      cancel() {
+        // This is called if the reader cancels,
+        // so we should stop generating strings
+        reader.abort();
+      }
+    });
+  }
 
   // PRIVATE
 
@@ -63,8 +80,14 @@ class FileReadableResponse {
     const reader = new FileReader();
     const promise = new Promise((resolve, reject) => {
       try {
+<<<<<<< HEAD:modules/core/src/lib/fetch/fetch-file.browser.js
         reader.onerror = _ => reject(new Error('Read error')); // TODO extract error
         reader.onabort = () => reject(new Error('Read aborted.'));
+=======
+        reader.onerror = event => reject(new Error(getErrorMessage(event)));
+        reader.onabort = () => reject(new Error('Read aborted by user.'));
+        reader.onprogress = event => onProgress(event);
+>>>>>>> core: Add makeChunkIterator. Improve iterator generator function naming.:modules/polyfills/wip/fetch-browser/fetch-file.browser.js
         reader.onload = () => resolve(reader.result);
       } catch (error) {
         reject(error);
@@ -78,4 +101,36 @@ class FileReadableResponse {
 // @returns {Promise.string}  Resolves to a string containing file contents
 export default function fetchFileReadable(fileOrBlob, options) {
   return Promise.resolve(new FileReadableResponse(fileOrBlob, options));
+}
+
+/**
+ * Extract error message from FileReader event
+ * @param {ProgressEvent<FileReader>} event
+ * @returns {string} error message suitable for user
+ */
+function getErrorMessage(event) {
+  switch (event.target.error.code) {
+    case event.target.error.NOT_FOUND_ERR:
+      return 'File not found';
+    case event.target.error.NOT_READABLE_ERR:
+      return 'File not readable';
+    case event.target.error.ABORT_ERR:
+      return 'Read aborted by user';
+    default:
+      return 'An error occurred reading this file.';
+  }
+}
+
+/**
+ * Extract error message from FileReader event
+ * @param {ProgressEvent<FileReader>} event
+ * @returns {string} error message suitable for user
+ */
+function onProgress(event) {
+  const {lengthComputable, loaded, total} = event;
+  let percent = 0;
+  if (event.lengthComputable) {
+    percent = Math.round((event.loaded / event.total) * 100);
+  }
+  return {lengthComputable, loaded, total, percent};
 }

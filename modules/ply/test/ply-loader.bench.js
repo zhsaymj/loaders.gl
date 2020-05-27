@@ -21,6 +21,7 @@ export default function PLYLoaderBench(bench) {
         const arrayBuffer = await response.arrayBuffer();
         await load(arrayBuffer, PLYWorkerLoader);
       })
+
       // .addAsync('Stream parsing', async () => {
       //   const stream = await createReadStream('@loaders.gl/ply/test/data/cube_att.ply');
       //   await _PLYStreamLoader.parseStream(getStreamIterator(stream));

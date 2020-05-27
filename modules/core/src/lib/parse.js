@@ -8,6 +8,9 @@ import parseWithWorker, {canParseWithWorker} from './loader-utils/parse-with-wor
 import {selectLoader} from './select-loader';
 
 export async function parse(data, loaders, options, context) {
+  // NO LONGER SUPPORTED - last param used to be and optional URL...
+  assert(typeof context !== 'string');
+
   // Signature: parse(data, options, context | url)
   // Uses registered loaders
   if (loaders && !Array.isArray(loaders) && !isLoaderObject(loaders)) {
@@ -15,32 +18,25 @@ export async function parse(data, loaders, options, context) {
     options = loaders;
     loaders = null;
   }
-
-  // DEPRECATED - backwards compatibility, last param can be URL...
-  let url = '';
-  if (typeof context === 'string') {
-    url = context;
-    context = null;
-  }
-
   options = options || {};
-
-  // Extract a url for auto detection
-  const autoUrl = getUrlFromData(data, url);
 
   // Chooses a loader (and normalizes it)
   // Also use any loaders in the context, new loaders take priority
   const candidateLoaders = getLoaders(loaders, context);
-  const loader = selectLoader(candidateLoaders, autoUrl, data);
+
+  // Extract a url for auto detection
+  const loader = selectLoader(data, candidateLoaders, options, context);
+
   // Note: if nothrow option was set, it is possible that no loader was found, if so just return null
   if (!loader) {
     return null;
   }
 
   // Normalize options
-  options = mergeOptions(loader, options, autoUrl);
+  options = mergeOptions(loader, options);
 
   // Get a context (if already present, will be unchanged)
+  const autoUrl = getUrlFromData(data, context);
   context = getLoaderContext({url: autoUrl, parse, loaders: candidateLoaders}, options, context);
 
   return await parseWithLoader(loader, data, options, context);

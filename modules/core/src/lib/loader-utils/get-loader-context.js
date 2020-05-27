@@ -41,3 +41,17 @@ export function getLoaders(loaders, context) {
   // If no loaders, return null to look in globally registered loaders
   return candidateLoaders && candidateLoaders.length ? candidateLoaders : null;
 }
+
+/*
+
+// Harvest information from the url
+// TODO - baseUri should be a directory, i.e. remove file component from baseUri
+// TODO - extract extension?
+// TODO - extract query parameters?
+// TODO - should these be injected on context instead of options?
+function addUrlOptions(options, url) {
+  if (url && !('baseUri' in options)) {
+    options.baseUri = url;
+  }
+}
+*/

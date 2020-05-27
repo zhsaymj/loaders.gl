@@ -6,8 +6,11 @@ import './iterator-utils/chunk-iteration.spec';
 import './iterator-utils/async-iteration.spec';
 import './iterator-utils/stream-iteration.spec';
 
-import './lib/fetch';
 import './lib/loader-utils';
+import './lib/utils/response-utils.spec';
+
+import './lib/fetch/fetch-file.spec';
+
 import './lib/progress/fetch-progress.spec';
 
 import './lib/set-loader-options.spec';
@@ -19,3 +22,5 @@ import './lib/load.spec';
 // TODO - The worker-utils specs test loading, not just worker farm
 // so we run them after util tests, until loading has been split out
 import './worker-utils';
+
+// Deprecated

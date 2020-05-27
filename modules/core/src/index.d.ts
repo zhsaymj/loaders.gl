@@ -7,7 +7,7 @@ export {writeFile, writeFileSync} from './lib/fetch/write-file';
 // CONFIGURATION
 export {setLoaderOptions} from './lib/set-loader-options';
 export {registerLoaders} from './lib/register-loaders';
-export {selectLoader as _selectLoader} from './lib/select-loader';
+export {selectLoader} from './lib/select-loader';
 
 // LOADING (READING + PARSING)
 export {parse} from './lib/parse';
@@ -51,6 +51,11 @@ export {assert} from '@loaders.gl/loader-utils';
 export {setPathPrefix, getPathPrefix, resolvePath} from '@loaders.gl/loader-utils';
 
 // EXPERIMENTAL
+export {
+  makeResponse as _makeResponse,
+  checkResponse as _checkResponse
+} from './lib/utils/response-utils';
+
 export {default as _WorkerThread} from './worker-utils/worker-thread';
 export {default as _WorkerFarm} from './worker-utils/worker-farm';
 export {default as _WorkerPool} from './worker-utils/worker-pool';

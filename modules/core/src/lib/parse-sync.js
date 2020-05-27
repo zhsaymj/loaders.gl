@@ -1,3 +1,4 @@
+import {assert} from '@loaders.gl/loader-utils';
 import {selectLoader} from './select-loader';
 import {isLoaderObject} from './loader-utils/normalize-loader';
 import {mergeOptions} from './loader-utils/merge-options';
@@ -5,6 +6,9 @@ import {getArrayBufferOrStringFromDataSync} from './loader-utils/get-data';
 import {getLoaders, getLoaderContext} from './loader-utils/get-loader-context';
 
 export function parseSync(data, loaders, options, context) {
+  // NO LONGER SUPPORTED - last param used to be and optional URL...
+  assert(typeof context !== 'string');
+
   // Signature: parseSync(data, options, url)
   // Uses registered loaders
   if (!Array.isArray(loaders) && !isLoaderObject(loaders)) {
@@ -13,28 +17,20 @@ export function parseSync(data, loaders, options, context) {
     loaders = null;
   }
 
-  // DEPRECATED - backwards compatibility, last param can be URL...
-  let url = '';
-  if (typeof context === 'string') {
-    url = context;
-    context = null;
-  }
-
   options = options || {};
 
   // Chooses a loader (and normalizes it)
   // Also use any loaders in the context, new loaders take priority
   const candidateLoaders = getLoaders(loaders, context);
-  const loader = selectLoader(candidateLoaders, url, data);
+  const loader = selectLoader(data, candidateLoaders, options, context);
   // Note: if nothrow option was set, it is possible that no loader was found, if so just return null
   if (!loader) {
     return null;
   }
 
   // Normalize options
-  options = mergeOptions(loader, options, url);
-
-  context = getLoaderContext({url, parseSync, loaders}, options);
+  options = mergeOptions(loader, options);
+  context = getLoaderContext({parseSync, loaders}, options, context);
 
   return parseWithLoaderSync(loader, data, options, context);
 }

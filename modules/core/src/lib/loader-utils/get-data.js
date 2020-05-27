@@ -10,8 +10,7 @@ import {
 } from '../../javascript-utils/is-type';
 import {makeStreamIterator} from '../../iterator-utils/stream-iteration';
 import {concatenateChunksAsync} from '../../iterator-utils/chunk-iteration';
-import fetchFileReadable from '../fetch/fetch-file.browser';
-import {checkFetchResponseStatus, checkFetchResponseStatusSync} from './check-errors';
+import {checkResponse} from '../utils/response-utils';
 
 const ERR_DATA = 'Cannot convert supplied data type';
 
@@ -54,7 +53,8 @@ export function getArrayBufferOrStringFromDataSync(data, loader) {
     let arrayBuffer = data.buffer;
 
     // Since we are returning the underlying arrayBuffer, we must create a new copy
-    // if this typed array / Buffer is a partial view into the ArryayBuffer
+    // if this typed array / Buffer is a partial view into the ArrayBuffer
+    // since not all loaders functions can handle offsets...
     // TODO - this is a potentially unnecessary copy
     const byteLength = data.byteLength || data.length;
     if (data.byteOffset !== 0 || byteLength !== arrayBuffer.byteLength) {
@@ -68,6 +68,7 @@ export function getArrayBufferOrStringFromDataSync(data, loader) {
 }
 
 // Convert async iterator to a promise
+// eslint-disable-next-line complexity
 export async function getArrayBufferOrStringFromData(data, loader) {
   // Resolve any promise
   data = await data;
@@ -77,14 +78,15 @@ export async function getArrayBufferOrStringFromData(data, loader) {
     return getArrayBufferOrStringFromDataSync(data, loader);
   }
 
-  // Blobs and files are FileReader compatible
-  if (isFileReadable(data)) {
-    data = await fetchFileReadable(data);
+  // Make sure atomic parsers can consume iterables
+  if (isIterable(data) || isAsyncIterable(data)) {
+    // Assume arrayBuffer iterator - attempt to concatenate
+    return concatenateChunksAsync(data);
   }
 
   if (isResponse(data)) {
     const response = data;
-    await checkFetchResponseStatus(response);
+    await checkResponse(response);
     return loader.binary ? await response.arrayBuffer() : await response.text();
   }
 
@@ -100,15 +102,14 @@ export async function getArrayBufferOrStringFromData(data, loader) {
   throw new Error(ERR_DATA);
 }
 
-export function getAsyncIteratorFromData(data) {
+export async function getAsyncIteratorFromData(data) {
   if (isIterator(data)) {
     return data;
   }
 
   // TODO: Our fetchFileReaderObject response does not yet support a body stream
   if (isResponse(data) && data.body) {
-    // Note Since this function is not async, we currently can't load error message, just status
-    checkFetchResponseStatusSync(data);
+    await checkResponse(data);
     return makeStreamIterator(data.body);
   }
 
@@ -120,10 +121,10 @@ export function getAsyncIteratorFromData(data) {
     return data[Symbol.asyncIterator]();
   }
 
-  return getIteratorFromData(data);
-}
+  if (isReadableStream(data)) {
+    return makeStreamIterator(data);
+  }
 
-export function getIteratorFromData(data) {
   // generate an iterator that emits a single chunk
   if (ArrayBuffer.isView(data)) {
     return (function* oneChunk() {
@@ -145,5 +146,18 @@ export function getIteratorFromData(data) {
     return data[Symbol.iterator]();
   }
 
+  // Convert a fetch response
+  if (isResponse(data)) {
+    const response = data;
+    await checkResponse(response);
+    return makeStreamIterator(response.body);
+  }
+
   throw new Error(ERR_DATA);
 }
+
+/* TODO - remove?
+function* makeChunkIterator(arrayBuffer) {
+  yield arrayBuffer;
+}
+*/
