@@ -3,23 +3,30 @@ import {parseMIMEType, parseMIMETypeFromURL} from './mime-type-utils';
 
 const QUERY_STRING_PATTERN = /\?.*/;
 
-export function getResourceUrlAndType(resource) {
+export function getResourceUrlAndType(resource, {isURL = true} = {}) {
   // If resource is a response, it contains the information directly
   if (isResponse(resource)) {
     const contentType = parseMIMEType(resource.headers.get('content-type'));
     const urlType = parseMIMETypeFromURL(resource.url);
-
     return {
       url: resource.url || '',
       type: contentType || urlType || null
     };
   }
 
-  if (typeof resource === 'string') {
+  if (isFileReadable(resource)) {
     return {
-      // TODO this could mess up data URL but it doesn't matter as it is just used for inference
+      url: resource.name || '',
+      type: resource.type || ''
+    };
+  }
+
+  if (typeof resource === 'string' && isURL) {
+    return {
+      // Remove query strings, if present
+      // TODO this doesn't handle data URLs (but it doesn't matter as it is just used for inference)
       url: resource.replace(QUERY_STRING_PATTERN, ''),
-      // If a data url
+      // extract MIME type if a data url
       type: parseMIMETypeFromURL(resource)
     };
   }
@@ -48,6 +55,5 @@ export function getResourceContentLength(resource) {
   if (ArrayBuffer.isView(resource)) {
     return resource.byteLength;
   }
-
   return -1;
 }

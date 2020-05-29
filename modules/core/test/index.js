@@ -7,6 +7,7 @@ import './iterator-utils/make-iterator.spec';
 
 import './lib/utils/mime-type-utils.spec';
 import './lib/utils/resource-utils.spec';
+import './lib/utils/response-utils.spec';
 
 import './lib/fetch';
 import './lib/loader-utils';

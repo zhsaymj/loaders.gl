@@ -1,7 +1,6 @@
 /* global fetch */
 import {resolvePath} from '@loaders.gl/loader-utils';
-import {isFileReadable} from '../../javascript-utils/is-type';
-import fetchFileReadable from './fetch-file.browser';
+import {makeResponse} from '../utils/response-utils';
 import {getErrorMessageFromResponse} from './fetch-error-message';
 
 // As fetch but respects pathPrefix and file aliases
@@ -10,9 +9,10 @@ import {getErrorMessageFromResponse} from './fetch-error-message';
 // * http/http urls
 // * File/Blob objects
 export async function fetchFile(url, options = {}) {
-  if (isFileReadable(url)) {
-    return fetchFileReadable(url, options);
+  if (typeof url !== 'string') {
+    return makeResponse(url);
   }
+
   url = resolvePath(url);
   // TODO - SUPPORT reading from `File` objects
   const response = await fetch(url, options);
