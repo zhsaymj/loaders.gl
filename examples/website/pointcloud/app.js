@@ -188,7 +188,7 @@ export default class App extends PureComponent {
 
     return (
       <div style={{position: 'relative', height: '100%'}}>
-        {this._renderControlPanel()}
+        {!window.website && this._renderControlPanel()}
         <DeckGL
           views={new OrbitView()}
           viewState={viewState}

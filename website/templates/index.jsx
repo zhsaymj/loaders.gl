@@ -1,6 +1,6 @@
 import React from 'react';
 import {Home} from 'gatsby-theme-ocular/components';
-import GLTFExample from './example-gltf';
+import GLTFExample from '../../examples/website/pointcloud/app';
 import styled from 'styled-components';
 
 if (typeof window !== 'undefined') {
