@@ -18,7 +18,6 @@ for await (const iterator of iteratorPromises) {
 
 ### `loadInBatches(files: (string | File | ...)[] | FileList, loaders: object | object[], options?: object]): Promise<AsyncIterator<any>>`
 
-
 ## Options
 
 A loader object, that can contain a mix of options:
@@ -29,7 +28,6 @@ A loader object, that can contain a mix of options:
 
 Please refer to the corresponding documentation page for for `parse` and for each loader for details.
 
-
-| Option                           | Type                                 | Default    | Description                                                                                                                                           |
-| -------------------------------- | ------------------------------------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `options.ignoreUnknownFiles`                  | `boolean` | `true`       | Ignores unknown files if multiple files are provided. |
+| Option                       | Type      | Default | Description                                           |
+| ---------------------------- | --------- | ------- | ----------------------------------------------------- |
+| `options.ignoreUnknownFiles` | `boolean` | `true`  | Ignores unknown files if multiple files are provided. |

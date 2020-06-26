@@ -5,6 +5,7 @@
 </p>
 
 `loadFilesInBatches` will load and parse multiple files from a list of files or urls. It scans the supplied files, looking for valid loader matches, and
+
 - calls `parseInBatches` on each valid file/loader combination.
 - ignores files that do not match a loader
 - provides access to the supplied files to the loaders (multi-file loading).

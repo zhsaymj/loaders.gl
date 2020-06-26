@@ -4,14 +4,13 @@ import {SHPLoader} from '@loaders.gl/shapefile';
 
 const SHAPEFILE_POLYGON_PATH = '@loaders.gl/shapefile/test/data/shapefile-js/polygons.shp';
 
-test.only('SHPLoader#loadInBatches polygons', async t => {
+test('SHPLoader#loadInBatches polygons', async t => {
   const iterator = await loadInBatches(SHAPEFILE_POLYGON_PATH, SHPLoader);
   t.ok(isIterator(iterator) || isAsyncIterable(iterator), 'loadInBatches returned iterator');
 
   let batchCount = 0;
   let rowCount = 0;
   for await (const batch of iterator) {
-    debugger;
     batchCount++;
     rowCount += batch.features.length;
   }

@@ -1,19 +1,16 @@
-/* global fetch, Response, FileReader */
-/** @typedef {import('./filesystem').IFileSystem} IFileSystem */
+/* global Response, fetch, FileReader */
+// import {fetchFile} from "../fetch/fetch-file"
+/** @typedef {import('@loaders.gl/loader-utils').IFileSystem} IFileSystem */
 
 /** @implements {IFileSystem} */
 export default class BrowserFileSystem {
   constructor(files, options = {}) {
     this._fetch = options.fetch || fetch;
     this.files = {};
-    this.lowerCaseFiles = {};
-    this.usedFiles = {};
 
     for (let i = 0; i < files.length; ++i) {
       const file = files[i];
       this.files[file.name] = file;
-      this.lowerCaseFiles[file.name.toLowerCase()] = file;
-      this.usedFiles[file.name] = false;
     }
 
     this.fetch = this.fetch.bind(this);
@@ -29,16 +26,15 @@ export default class BrowserFileSystem {
     }
 
     // local fetches are served from the list of files
-    const file = this._getFile(path, true);
+    const file = this.files[path];
     if (file) {
-      // TODO - prepare headers
       // return makeResponse()
-      return new Response(file);
+      return new Response(this.files[path]);
     }
     return new Response(path, {status: 400, statusText: 'NOT FOUND'});
   }
 
-  // STAT
+  // FS
 
   async readdir() {
     const files = [];
@@ -49,25 +45,21 @@ export default class BrowserFileSystem {
   }
 
   async stat(path, options) {
-    const file = this._getFile(path, false);
+    const file = this.files[path];
     if (!file) {
       throw new Error(`No such file: ${path}`);
     }
     return {size: file.size};
   }
 
-  // RANDOM ACCESS
-
-  async unlink(path) {
-    // Just removes the file from the lists
-    delete this.files[path];
-    delete this.lowerCaseFiles[path];
-    this.usedFiles[path] = true;
+  // Just removes the file from the list
+  async unlink(pathname) {
+    delete this.files[pathname];
   }
 
   // RANDOM ACCESS
-  async open(path) {
-    return this._getFile(path, true);
+  async open(pathname) {
+    return this.files[pathname];
   }
 
   // buffer is the buffer that the data (read from the fd) will be written to.
@@ -82,18 +74,6 @@ export default class BrowserFileSystem {
 
   async close(fd) {
     // NO OP
-  }
-
-  // PRIVATE
-
-  // Supports case independent paths, and file usage tracking
-  _getFile(path, used) {
-    // Prefer case match, but fall back to case indepent.
-    const file = this.files[path] || this.lowerCaseFiles[path];
-    if (file && used) {
-      this.usedFiles[path] = true;
-    }
-    return file;
   }
 }
 
