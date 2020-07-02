@@ -53,7 +53,7 @@ test('loadInBatches#non-batched loader', async t => {
 });
 
 test('loadInBatches#FileList', async t => {
-  if (!isBrowser) {
+  if (isBrowser) {
     const response = await fetchFile(OBJ_ASCII_URL);
     const blob = await response.blob();
 
