@@ -84,7 +84,7 @@ export function getFetchFunction(options, context) {
     return url => fetchFile(url, fetch);
   }
 
-  // else refer to context (from parent loader) if available 
+  // else refer to context (from parent loader) if available
   if (context && context.fetch) {
     return context.fetch;
   }

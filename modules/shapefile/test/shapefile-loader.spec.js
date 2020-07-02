@@ -9,22 +9,22 @@ const SHAPEFILE_JS_DATA_FOLDER = '@loaders.gl/shapefile/test/data/shapefile-js';
 const SHAPEFILE_JS_TEST_FILES = {
   'boolean-property': null,
   'date-property': null,
-  'empty': null,
+  empty: null,
   'ignore-properties': null,
   'latin1-property': null,
   'mixed-properties': null,
-  'multipointm': null,
-  'multipoints': null,
-  'null': null,
+  multipointm: null,
+  multipoints: null,
+  null: null,
   'number-null-property': null,
   'number-property': null,
-  'pointm': null,
-  'points': null,
-  'polygonm': null,
-  'polygons': null,
-  'polylinem': null,
-  'polylines': null,
-  'singleton': null,
+  pointm: null,
+  points: null,
+  polygonm: null,
+  polygons: null,
+  polylinem: null,
+  polylines: null,
+  singleton: null,
   'string-property': null,
   'utf8-property': null
 };
@@ -53,7 +53,7 @@ test('ShapefileLoader#load (from browser File objects)', async t => {
   t.end();
 });
 
-test.only('ShapefileLoader#load (from files or URLs)', async t => {
+test('ShapefileLoader#load (from files or URLs)', async t => {
   // test file load (node) or URL load (browser)
   for (const testFileName in SHAPEFILE_JS_TEST_FILES) {
     const filename = `${SHAPEFILE_JS_DATA_FOLDER}/${testFileName}.shp`;
@@ -65,7 +65,6 @@ test.only('ShapefileLoader#load (from files or URLs)', async t => {
 
   t.end();
 });
-
 
 async function getFileList(testFileName) {
   const EXTENSIONS = ['.shp', '.shx', '.dbf', '.cpg', '.prj'];
